@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import { TextField, Button, Container, Paper, Typography, Grid } from '@mui/material';
 import './style.css';
 import { useDispatch } from 'react-redux';
@@ -31,12 +31,9 @@ const Login = () => {
 
     };
     return (
-        <Container maxWidth="md" sx={{ height: '100vh', display: 'flex', alignItems: 'center' }}>
+        <Container sx={{ height: '100vh', display: 'flex', alignItems: 'center'}}>
             <Grid container>
-                <Grid item xs={12} sm={6} className="hidden sm:block">
-                    <Paper style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#DC7633', height: '100%' }} className="hide-on-small">
-                        <Typography variant="h4" style={{ color: 'white', fontWeight: 'bold' }}>Mi mascota</Typography>
-                    </Paper>
+                <Grid item xs={12} sm={3} className="hidden sm:block">
                 </Grid>
                 <Grid item xs={12} sm={6} style={{ background: '#F8C471' }}>
                     <Paper elevation={3} sx={{ padding: 4, display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
@@ -75,6 +72,8 @@ const Login = () => {
                             </Button>
                         </form>
                     </Paper>
+                </Grid>
+                <Grid item xs={12} sm={3} className="hidden sm:block">
                 </Grid>
             </Grid>
         </Container>
