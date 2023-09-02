@@ -10,7 +10,7 @@ import { NavLink } from 'react-router-dom';
 
 
 
-const Login = () => {
+const ForgotPassword = () => {
     const distpach = useDispatch()
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -24,7 +24,7 @@ const Login = () => {
         setPassword(event.target.value);
     };
 
-    const handleLogin = async () => {
+    const handleForgotPassword = async () => {
         console.log('Correo Electrónico:', email);
         console.log('Contraseña:', password);
 
@@ -96,7 +96,7 @@ const Login = () => {
                                 variant="contained"
                                 color="primary"
                                 sx={{ marginTop: 2, backgroundColor: '#DC7633' }}
-                                onClick={handleLogin}
+                                onClick={handleForgotPassword}
                             >
                                 Iniciar Sesión
                             </Button>
@@ -120,4 +120,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default ForgotPassword;

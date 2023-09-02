@@ -2,18 +2,19 @@ import { useState } from 'react';
 import { TextField, Button, Container, Paper, Typography, Grid } from '@mui/material';
 import Alert from "@mui/material/Alert";
 import './style.css';
-import { useDispatch } from 'react-redux';
-import { loggearme } from '../../state/LoginSlice';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase';
-import { NavLink } from 'react-router-dom';
+import { Outlet, useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 
 
-const Login = () => {
-    const distpach = useDispatch()
+const Register = () => {
+
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [repassword, setRepassword] = useState('');
     const [error, setError] = useState(null);
 
     const handleEmailChange = (event) => {
@@ -24,22 +25,28 @@ const Login = () => {
         setPassword(event.target.value);
     };
 
-    const handleLogin = async () => {
-        console.log('Correo Electrónico:', email);
-        console.log('Contraseña:', password);
+    const handleRePasswordChange = (event) => {
+      setRepassword(event.target.value);
+  };
 
+    const handleRegister = async () => {
 
+        if(password !== repassword){
+          return setError('Las contraseñas no coinciden')
+        }
 
         try {
-            await signInWithEmailAndPassword(auth, email, password) // Iniciar sesión
+            await createUserWithEmailAndPassword(auth, email, password) //registrarme
                 .then(async (userCredential) => {
                     console.log(userCredential)
-                    const user = {
-                        id: userCredential.user.uid,
-                        email: email,
-                        password: password
-                    }
-                    distpach(loggearme(user))
+                    Swal.fire({
+                      title: 'Usuario creado con exito',
+                      text: email,
+                      icon: 'success',
+                      confirmButtonText: 'Ok',
+                    });
+
+                    navigate('/login')
                 })
                 .catch((error) => {
                     console.log('error', error)
@@ -51,9 +58,6 @@ const Login = () => {
             setError(error.message);
 
         }
-
-
-
     };
     return (
         <Container sx={{ height: '100vh', display: 'flex', alignItems: 'center' }}>
@@ -68,7 +72,7 @@ const Login = () => {
                     )}
                     <Paper elevation={3} sx={{ padding: 4, display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
                         <Typography variant="h4" gutterBottom>
-                            Iniciar Sesión
+                            Registrarse
                         </Typography>
                         <form>
                             <TextField
@@ -91,26 +95,26 @@ const Login = () => {
                                 value={password}
                                 onChange={handlePasswordChange}
                             />
+                            <TextField
+                                fullWidth
+                                margin="normal"
+                                label="Repetir Contraseña"
+                                variant="outlined"
+                                type="password"
+                                placeholder="Ingresa nuevamente tu contraseña"
+                                value={repassword}
+                                onChange={handleRePasswordChange}
+                            />
                             <Button
                                 fullWidth
                                 variant="contained"
                                 color="primary"
                                 sx={{ marginTop: 2, backgroundColor: '#DC7633' }}
-                                onClick={handleLogin}
+                                onClick={handleRegister}
                             >
-                                Iniciar Sesión
+                                Registrarme
                             </Button>
                         </form>
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            color="secondary"
-                            sx={{ marginTop: 2, backgroundColor: 'white', color:'#A04000 ' }}
-                            component={NavLink}
-                            to="/forgotpassword"
-                        >
-                            Recuperar contraseña
-                        </Button>
                     </Paper>
                 </Grid>
                 <Grid item xs={12} sm={3} className="hidden sm:block">
@@ -120,4 +124,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Register;
