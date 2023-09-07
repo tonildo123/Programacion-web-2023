@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, addDoc, updateDoc, doc } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db, uploadFile } from '../../firebase';
 import { useSelector, useDispatch } from 'react-redux';
 import { CardMedia, Container, Grid, Card, CardContent, CardActions, Button } from '@mui/material';
 import ProfileCard from '../../components/ProfileCard';
@@ -19,6 +19,7 @@ const Profile = () => {
   const [lastName, setlastName] = useState('');
   const [numberPhone, setnumberPhone] = useState('');
   const [images, setImages] = useState([]);
+  const [imagesName, setImagesName] = useState();
   const [imageData, setImageData] = useState('https://e7.pngegg.com/pngimages/223/244/png-clipart-computer-icons-avatar-user-profile-avatar-heroes-rectangle.png');
   const navigate = useNavigate();
   const profileCollection = collection(db, 'ProfileUsers');
@@ -30,39 +31,26 @@ const Profile = () => {
     console.log('state : ', JSON.stringify(state));
   }, []);
 
-  const convertirBase64 = (archivos) => {
-    Array.from(archivos).forEach(archivo => {
-      let reader = new FileReader();
-      reader.readAsDataURL(archivo);
-      reader.onload = function () {
-        let base64 = reader.result;
-        setImageData(base64);
-      };
-    });
-  };
+  
 
   const openImagePicker = () => {
     Swal.fire({
       title: 'Seleccionar imagen',
-      // icon: 'info',
       showCancelButton: true,
       confirmButtonText: 'Tomar foto',
       cancelButtonText: 'Seleccionar',
     }).then((result) => {
       if (result.isConfirmed) {
-        // Handle "Tomar foto" option
         setIsCapturing(true);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        document.getElementById('upload-button').click(); // Trigger file input click for "Seleccionar" option
+        document.getElementById('upload-button').click(); 
       }
     });
   };
   const captureImage = () => {
     const imageSrc = webcamRef.current.getScreenshot();
-    // Do something with the captured image source (e.g., convert it to base64)
     const blob = dataURLtoBlob(imageSrc);
-    convertirBase64(blob);
-    setImageData(imageSrc); // Actualiza el estado con la imagen capturada
+    setImageData(imageSrc);
     setIsFormValid(pickname !== '' && true); 
     setIsCapturing(false);
   };
@@ -71,8 +59,10 @@ const Profile = () => {
     e.preventDefault();
     try {
 
+      const url = await uploadFile(imageData,imagesName,'ProfileFolder')
+
       const profileDoc = doc(db, 'ProfileUsers', id)
-      const data = { name: pickname,lastName:lastName, avatar: imageData}
+      const data = { name: pickname,lastName:lastName, avatar: url}
       await updateDoc(profileDoc, data)
       
       Swal.fire({
@@ -84,7 +74,7 @@ const Profile = () => {
       }).then((result) => {
         if (result.isConfirmed) {
           const user = {
-            avatar : imageData,
+            avatar : url,
             name: pickname,
             lastName: lastName,
             numberPhone: numberPhone
@@ -126,7 +116,6 @@ const Profile = () => {
 
   function readmultifiles(e, indexInicial) {
     const files = e.currentTarget.files;
-    convertirBase64(e.currentTarget.files);
 
     const arrayImages = [];
 
@@ -147,13 +136,7 @@ const Profile = () => {
     return arrayImages;
   }
 
-  const handleNicknameChange = (e) => {
-    const newNickname = e.target.value;
-    setPickname(newNickname);
-    setIsFormValid(newNickname !== '' && (imageData || isCapturing));
-  };
-
-  const dataURLtoBlob = (dataURL) => {
+   const dataURLtoBlob = (dataURL) => {
     const arr = dataURL.split(',');
     const mime = arr[0].match(/:(.*?);/)[1];
     const bstr = atob(arr[1]);
@@ -249,7 +232,6 @@ const Profile = () => {
                 fullWidth
                 variant="contained"
                 color="primary"
-                // disabled={!isFormValid}
                 sx={{ marginTop: 2, backgroundColor: '#DC7633' }} onClick={store}>Guardar cambios</Button>
               </CardActions>
             </div>
