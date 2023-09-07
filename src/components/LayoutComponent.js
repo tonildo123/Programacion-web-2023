@@ -3,14 +3,17 @@ import {
   AppBar,
   Typography,
   Box,
+  Link,
   Grid,
 
 } from '@mui/material';
 import { useSelector } from 'react-redux';
 
 import ResponsiveAppBar from './Navbar';
-import { NavLink } from 'react-router-dom';
-
+/* import { Link } from 'react-router-dom'; */
+import InstagramIcon from '@mui/icons-material/Instagram';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
 
 const Layout = ({ children }) => {
 
@@ -24,26 +27,37 @@ const Layout = ({ children }) => {
         <ResponsiveAppBar />
       </AppBar>
       {children}
-      <Box sx={{ marginTop: 4, backgroundColor: '#DC7633' }}>
-        <Grid container spacing={3}>
+      <Box sx={{ backgroundColor: '#DC7633', justify: "center", fontFamily: 'Roboto'}}>
+        <Grid container spacing={3} padding={4}>
           <Grid item xs={12} sm={4}>
-            <Typography variant="h6" sx={{ marginLeft: 4 }}>Contactos</Typography>
-            <ul>
-              <li><a href="#">Facebook</a></li>
-              <li><a href="https://www.linkedin.com/in/diaz-carlos-antonio/">Linkdin</a></li>
-              <li><a href="#">Instagram</a></li>
+            <ul style={{ listStyle: 'none', display: 'flex' }}>
+              <li><FacebookIcon color='action'/></li>
+              <li><LinkedInIcon color='action'/></li>
+              <li><InstagramIcon color='action'/></li>
             </ul>
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <Typography variant="h6">
-              <NavLink to="/termsandconditions">
-                Términos y Condiciones
-              </NavLink>
+          <Grid item xs={12}>
+            <Typography color="action">
+              2023 &copy; Todos los derechos reservados
             </Typography>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <img src="../assets/Captura5.PNG" alt="Footer Image" />
+            <Grid container>
+              <Grid item xs={6}>
+                <Typography variant="secondary">
+                  <Link to="/termsandconditions" color="inherit" underline="none">
+                    Términos y Condiciones
+                  </Link>
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="secondary">
+                  <Link to="/" color="inherit" underline="none">
+                    Política de Privacidad
+                  </Link>
+                </Typography>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Box>
