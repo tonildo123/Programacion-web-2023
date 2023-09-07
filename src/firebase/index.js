@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import {getFirestore} from '@firebase/firestore';
 import { getAuth } from "firebase/auth";
-// import { getFunctions, httpsCallable } from "firebase/functions";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyABDggLbGI1cpYJruXzDPLDDZuLLQWgjVw",
@@ -15,5 +15,21 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore(app);
+const storage = getStorage(app);
+
+/**
+ * Function to upolad file to fierbase
+ * @param {File} file the file to uplad
+ * @returns  {Promise<string>} url of the upladed file
+ */
+
+export async function uploadFile(file, nameFile, folderName){
+
+  const storageRef = ref(storage, `${folderName}/${nameFile}`)
+  await uploadBytes(storageRef, file)
+  const url = await getDownloadURL(storageRef)
+  return url;
+  
+}
 
 export {app, db, auth, firebaseConfig}
