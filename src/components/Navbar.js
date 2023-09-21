@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import PetsIcon from '@mui/icons-material/Pets';
@@ -13,11 +15,19 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { useSelector } from 'react-redux';
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
-const settings = [{ 'label': 'Mi Perfil', 'ruta': '/profile/edit' },
-{ 'label': 'Contactanos', 'ruta': '/nosotros' },
-{ 'label': 'Cambiar contraseña', 'ruta': '/profile/password' }];
+const settingsLogged = [{ 'label': 'Mi Perfil', 'ruta': '/profile/edit' },
+                  { 'label': 'Cambiar contraseña', 'ruta': '/profile/password' }];
+const settingsUnLogged = [{ 'label': 'Acceder', 'ruta': '/login' },
+                  { 'label': 'Recuperar contraseña', 'ruta': '/profile/password-recovery' }];                  
+
+const menuDrawerUnlogged = [{ 'label': 'Registrarme', 'ruta': '/register' },
+                            { 'label': 'Contactanos', 'ruta': '/nosotros' },];
+
+const menuDrawerLogged = [{ 'label': 'Inicio', 'ruta': '/home' },
+                    { 'label': 'mascotas', 'ruta': "/pets/create" },
+                    { 'label': 'Cambiar contraseña', 'ruta': '/profile/password' }];                    
 
 function ResponsiveAppBar() {
 
@@ -49,8 +59,8 @@ function ResponsiveAppBar() {
                     <Typography
                         variant="h6"
                         noWrap
-                        component="a"
-                        href={logged ? '/home' : '/login'}
+                        component={NavLink}
+                        to={logged ? "/home" : "/login"}
                         sx={{
                             mr: 2,
                             display: { xs: 'none', md: 'flex' },
@@ -61,7 +71,7 @@ function ResponsiveAppBar() {
                             textDecoration: 'none',
                         }}
                     >
-                        Mi Mascota
+                        Mi Mascota 
                     </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                         <IconButton
@@ -74,14 +84,44 @@ function ResponsiveAppBar() {
                         >
                             <MenuIcon />
                         </IconButton>
-                        {logged ? null : null}
+                        <Menu
+                            id="menu-appbar"
+                            anchorEl={anchorElNav}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'left',
+                            }}
+                            open={Boolean(anchorElNav)}
+                            onClose={handleCloseNavMenu}
+                            sx={{
+                                display: { xs: 'block', md: 'none', color: 'black' },
+                            }}
+                        >
+                            {!logged && menuDrawerUnlogged.map((page) => (
+                                <MenuItem key={page.label} onClick={handleCloseNavMenu}>
+                                    <Typography component={NavLink}
+                                        to={`${page.ruta}`} textAlign="center" style={{ color: 'black' }}>{page.label}</Typography>
+                                </MenuItem>
+                            ))}
+                            {logged && menuDrawerLogged.map((page) => (
+                                <MenuItem key={page.label} onClick={handleCloseNavMenu}>
+                                    <Typography component={NavLink}
+                                        to={`${page.ruta}`} textAlign="center" style={{ color: 'black' }}>{page.label}</Typography>
+                                </MenuItem>
+                            ))}
+                        </Menu>
                     </Box>
                     <PetsIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
                     <Typography
                         variant="h5"
                         noWrap
-                        component="a"
-                        href="/"
+                        component={NavLink}
+                        to={logged ? "/home" : "/login"}
                         sx={{
                             mr: 2,
                             display: { xs: 'flex', md: 'none' },
@@ -93,8 +133,9 @@ function ResponsiveAppBar() {
                             textDecoration: 'none',
                         }}
                     >
-                        Mi mascota {/**mobile */}
-                    </Typography>
+                        Mi mascota
+                    </Typography>{/**mobile */}
+                    {/**desde aqui web */}
                     {logged ? <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         <Button
                             color="inherit"
@@ -104,32 +145,25 @@ function ResponsiveAppBar() {
                         >
                             Mascotas
                         </Button>
-                        <Button
-                            color="inherit"
-                            component={NavLink}
-                            to="/profile/owns"
-                            sx={{ pt: 1 }}
-                        >
-                            Pertenencias
-                        </Button>
-                    </Box> : <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                    </Box> 
+                    : <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         <Button
                             color="inherit"
                             component={NavLink}
                             to="/register"
                             sx={{ pt: 1 }}
                         >
-                            Registrarme {/**web */}
+                            Registrarme 
                         </Button>
                     </Box>}
-
+                    {/**web */}
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                <Avatar  src="/static/images/avatar/2.jpg" />
                             </IconButton>
                         </Tooltip>
-                        {logged ? <Menu
+                        <Menu
                             sx={{ mt: '45px' }}
                             id="menu-appbar"
                             anchorEl={anchorElUser}
@@ -145,16 +179,28 @@ function ResponsiveAppBar() {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {settings.map((setting) => (
+                            {logged && settingsLogged.map((setting) => (
                                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center">
-                                        <Link to={setting.ruta} className="btn btn-outline-primary">
-                                            {setting.label}
-                                        </Link>
+                                    <Typography textAlign="center" component={NavLink}  to={`${setting.ruta}`}>                                        
+                                        {setting.label}                                        
                                     </Typography>
                                 </MenuItem>
                             ))}
-                        </Menu> : null}
+                            
+                            {logged &&
+                                <MenuItem onClick={handleCloseUserMenu}>
+                                    <Typography textAlign="center" >                                        
+                                        Salir                                     
+                                    </Typography>
+                                </MenuItem>}
+                            {!logged && settingsUnLogged.map((setting) => (
+                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                                    <Typography textAlign="center" component={NavLink}  to={`${setting.ruta}`}>                                        
+                                        {setting.label}                                        
+                                    </Typography>
+                                </MenuItem>
+                            ))}
+                        </Menu>
                     </Box>
                 </Toolbar>
             </Container>

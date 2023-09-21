@@ -70,9 +70,13 @@ const Home = () => {
 
   const renderCard = (card, index) => {
     return (
-      <Grid item xs={6} md={3} key={index}>
-        <Card sx={{ height: "100", margin: 1 }} >
-          <CardMedia component="img" alt="Card Image" image={card.photo} />
+      <Grid item key={index}>
+        <Card sx={{ height: "350px", width: { xs: "100%", sm: "200px" }, p: 1 }} >
+          <CardMedia
+            component="img"
+            alt="Card Image"
+            image={card.photo}
+            sx={{ width: '100%', height: '200px' }} />
           <CardContent>
             <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>{card.pickname}</Typography>
             <Typography variant="body1">Vivo en ...</Typography>
@@ -93,21 +97,19 @@ const Home = () => {
 
 
   return (
-    <Container sx={{ display: 'flex', alignItems: 'flex-start', padding: 0 }} maxWidth="xl" >
-      <Grid container>
-        <Grid item xs={12} md={3} className="hidden sm:block" sx={{ backgroundColor: '#FAD7A0' }}>
-          <ProfileCard />
-        </Grid>
-        <Grid item xs={12} md={6} sx={{ backgroundColor: '#FAD7A0' }}>
-          <Grid container>
-            {pets.length === 0 ? <welcomeComponent /> : pets.map(renderCard)}
-          </Grid>
-        </Grid>
-        <Grid item xs={12} className="hidden sm:block" sx={{ height: '100vh', display: 'flex', backgroundColor: '#F8C471', justifyContent: 'center', alignItems: 'center' }}>
-          Publicidad
+    <Grid container>
+      <Grid item xs={12} md={3} sx={{ backgroundColor: '#FEF5E7' }}>
+        <ProfileCard />
+      </Grid>
+      <Grid item xs={12} md={6} sx={{ backgroundColor: '#FAD7A0' }}>
+        <Grid container sx={{ justifyContent: 'space-evenly' }}>
+          {pets.length === 0 ? <welcomeComponent /> : pets.map(renderCard)}
         </Grid>
       </Grid>
-    </Container>
+      <Grid item xs={12} md={3} sx={{ display: 'flex', backgroundColor: '#FEF5E7', justifyContent: 'center', alignItems: 'center' }}>
+        Publicidad
+      </Grid>
+    </Grid>
   )
 }
 

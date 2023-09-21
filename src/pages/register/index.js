@@ -26,13 +26,13 @@ const Register = () => {
     };
 
     const handleRePasswordChange = (event) => {
-      setRepassword(event.target.value);
-  };
+        setRepassword(event.target.value);
+    };
 
     const handleRegister = async () => {
 
-        if(password !== repassword){
-          return setError('Las contraseñas no coinciden')
+        if (password !== repassword) {
+            return setError('Las contraseñas no coinciden')
         }
 
         try {
@@ -40,10 +40,10 @@ const Register = () => {
                 .then(async (userCredential) => {
                     console.log(userCredential)
                     Swal.fire({
-                      title: 'Usuario creado con exito',
-                      text: email,
-                      icon: 'success',
-                      confirmButtonText: 'Ok',
+                        title: 'Usuario creado con exito',
+                        text: email,
+                        icon: 'success',
+                        confirmButtonText: 'Ok',
                     });
 
                     navigate('/login')
@@ -64,7 +64,7 @@ const Register = () => {
             <Grid container>
                 <Grid item xs={12} sm={3} className="hidden sm:block">
                 </Grid>
-                <Grid item xs={12} sm={6} style={{ background: '#F8C471' }}>
+                <Grid item xs={12} sm={6} style={{ background: 'white' }}>
                     {error && (
                         <Alert severity="error" onClose={() => setError(null)}>
                             {error}

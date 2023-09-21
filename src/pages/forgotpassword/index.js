@@ -60,7 +60,7 @@ const ForgotPassword = () => {
             <Grid container>
                 <Grid item xs={12} sm={3} className="hidden sm:block">
                 </Grid>
-                <Grid item xs={12} sm={6} style={{ background: '#F8C471' }}>
+                <Grid item xs={12} sm={6} style={{ background: 'white' }}>
                     {error && (
                         <Alert severity="error" onClose={() => setError(null)}>
                             {error}
@@ -105,7 +105,7 @@ const ForgotPassword = () => {
                             fullWidth
                             variant="contained"
                             color="secondary"
-                            sx={{ marginTop: 2, backgroundColor: 'white', color:'#A04000 ' }}
+                            sx={{ marginTop: 2, backgroundColor: 'white', color: '#A04000 ' }}
                             component={NavLink}
                             to="/forgotpassword"
                         >

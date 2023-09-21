@@ -31,7 +31,7 @@ const Profile = () => {
     console.log('state : ', JSON.stringify(state));
   }, []);
 
-  
+
 
   const openImagePicker = () => {
     Swal.fire({
@@ -43,7 +43,7 @@ const Profile = () => {
       if (result.isConfirmed) {
         setIsCapturing(true);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        document.getElementById('upload-button').click(); 
+        document.getElementById('upload-button').click();
       }
     });
   };
@@ -51,7 +51,7 @@ const Profile = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     const blob = dataURLtoBlob(imageSrc);
     setImageData(imageSrc);
-    setIsFormValid(pickname !== '' && true); 
+    setIsFormValid(pickname !== '' && true);
     setIsCapturing(false);
   };
 
@@ -59,34 +59,34 @@ const Profile = () => {
     e.preventDefault();
     try {
 
-      const url = await uploadFile(imageData,imagesName,'ProfileFolder')
+      const url = await uploadFile(imageData, imagesName, 'ProfileFolder')
 
       const profileDoc = doc(db, 'ProfileUsers', id)
-      const data = { name: pickname,lastName:lastName, avatar: url}
+      const data = { name: pickname, lastName: lastName, avatar: url }
       await updateDoc(profileDoc, data)
-      
+
       Swal.fire({
         title: 'Guadado exitosamente!',
         icon: 'success',
         showCancelButton: true,
         confirmButtonText: 'OK',
-        
+
       }).then((result) => {
         if (result.isConfirmed) {
           const user = {
-            avatar : url,
+            avatar: url,
             name: pickname,
             lastName: lastName,
             numberPhone: numberPhone
-        }
+          }
 
-        dispatch(profileSuccess(user))
-        navigate('/home');
-        } else if (result.dismiss === Swal.DismissReason.cancel){
+          dispatch(profileSuccess(user))
+          navigate('/home');
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
           navigate('/home');
         }
       });
-      
+
     } catch (error) {
 
       Swal.fire({
@@ -94,11 +94,11 @@ const Profile = () => {
         icon: 'error',
         showCancelButton: true,
         confirmButtonText: 'OK',
-        
+
       })
-      
+
     }
-    
+
   };
 
   const changeInput = (e) => {
@@ -136,7 +136,7 @@ const Profile = () => {
     return arrayImages;
   }
 
-   const dataURLtoBlob = (dataURL) => {
+  const dataURLtoBlob = (dataURL) => {
     const arr = dataURL.split(',');
     const mime = arr[0].match(/:(.*?);/)[1];
     const bstr = atob(arr[1]);
@@ -149,99 +149,98 @@ const Profile = () => {
   };
 
   return (
-    <Container sx={{ height: '100vh', display: 'flex', alignItems: 'flex-start' }} maxWidth="xl" style={{ padding: 0 }}>
-      <Grid container>
-        <Grid item xs={12} sm={3} className="hidden sm:block" sx={{ backgroundColor: '#FAD7A0' }}>
-          <ProfileCard />
-        </Grid>
-        <Grid item xs={12} sm={6} sx={{ backgroundColor: '#FAD7A0' }}>
-          <Card sx={{ backgroundColor: '#FAD7A0', maxWidth: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', }}>
+
+    <Grid container >
+      <Grid item xs={12} sm={3} sx={{ backgroundColor: '#FEF5E7', }}>
+        <ProfileCard />
+      </Grid>
+      <Grid item xs={12} sm={6} sx={{ backgroundColor: '#FAD7A0', pt: '1%' }}>
+        <Card sx={{ backgroundColor: '#FAD7A0', maxWidth: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', }}>
           {isCapturing ? (
-              <div>
-                <Webcam
-                  ref={webcamRef}
-                  audio={false}
-                  width={640}
-                  height={480}
-                />
-                <CardActions>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    sx={{ marginTop: 2, backgroundColor: '#DC7633' }}
-                    onClick={captureImage}
-                  >
-                    Capturar
-                  </Button>
-                </CardActions>
-              </div>
-            ) : (
-              <CardMedia
-                sx={{ height: 300, backgroundSize: 'contain', backgroundImage: `url(${imageData})` }}
-                title="Captured Image"
+            <div>
+              <Webcam
+                ref={webcamRef}
+                audio={false}
+                width={640}
+                height={480}
               />
-            )}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100%',
-              }}
-            >
-              <CardContent>
-                <input
-                  type="file"
-                  multiple
-                  onChange={changeInput}
-                  style={{ display: 'none' }}
-                  id="upload-button"
-                />
-                <Button size="small" onClick={openImagePicker}>
-                  SELECCIONAR IMAGEN
-                </Button>
-              </CardContent>
-              <CardContent>
-                <input
-                  type="text"
-                  value={pickname}
-                  onChange={(e) => setPickname(e.target.value)}
-                  placeholder="Nombre"
-                />
-              </CardContent>
-              <CardContent>
-                <input
-                  type="text"
-                  value={lastName}
-                  onChange={(e) => setlastName(e.target.value)}
-                  placeholder="Apellido"
-                />
-              </CardContent>
-              <CardContent>
-                <input
-                  type="number"
-                  value={numberPhone}
-                  onChange={(e) => setnumberPhone(e.target.value)}
-                  placeholder="Telefono"
-                />
-              </CardContent>
               <CardActions>
-                <Button 
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  sx={{ marginTop: 2, backgroundColor: '#DC7633' }}
+                  onClick={captureImage}
+                >
+                  Capturar
+                </Button>
+              </CardActions>
+            </div>
+          ) : (
+            <CardMedia
+              sx={{ height: 300, backgroundSize: 'contain', backgroundImage: `url(${imageData})` }}
+              title="Captured Image"
+            />
+          )}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+            }}
+          >
+            <CardContent>
+              <input
+                type="file"
+                multiple
+                onChange={changeInput}
+                style={{ display: 'none' }}
+                id="upload-button"
+              />
+              <Button size="small" onClick={openImagePicker}>
+                SELECCIONAR IMAGEN
+              </Button>
+            </CardContent>
+            <CardContent>
+              <input
+                type="text"
+                value={pickname}
+                onChange={(e) => setPickname(e.target.value)}
+                placeholder="Nombre"
+              />
+            </CardContent>
+            <CardContent>
+              <input
+                type="text"
+                value={lastName}
+                onChange={(e) => setlastName(e.target.value)}
+                placeholder="Apellido"
+              />
+            </CardContent>
+            <CardContent>
+              <input
+                type="number"
+                value={numberPhone}
+                onChange={(e) => setnumberPhone(e.target.value)}
+                placeholder="Telefono"
+              />
+            </CardContent>
+            <CardActions>
+              <Button
                 fullWidth
                 variant="contained"
                 color="primary"
                 sx={{ marginTop: 2, backgroundColor: '#DC7633' }} onClick={store}>Guardar cambios</Button>
-              </CardActions>
-            </div>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={3} className="hidden sm:block" sx={{ height: '100vh', display: 'flex', backgroundColor: '#F8C471', justifyContent: 'center', alignItems: 'center' }}>
-          Publicidad
-        </Grid>
+            </CardActions>
+          </div>
+        </Card>
       </Grid>
-    </Container>
+      <Grid item xs={12} md={3} sx={{ display: 'flex', backgroundColor:'#FEF5E7', justifyContent: 'center', alignItems: 'center' }}>
+        Publicidad
+      </Grid>
+    </Grid>
   );
 };
 
