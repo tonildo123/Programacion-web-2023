@@ -25,15 +25,10 @@ const Login = () => {
     };
 
     const handleLogin = async () => {
-        console.log('Correo Electrónico:', email);
-        console.log('Contraseña:', password);
-
-
 
         try {
-            await signInWithEmailAndPassword(auth, email, password) // Iniciar sesión
+            await signInWithEmailAndPassword(auth, email, password) 
                 .then(async (userCredential) => {
-                    console.log(userCredential)
                     const user = {
                         id: userCredential.user.uid,
                         email: email,
@@ -42,12 +37,10 @@ const Login = () => {
                     distpach(loggearme(user))
                 })
                 .catch((error) => {
-                    console.log('error', error)
                     setError(error.message);
                 })
 
         } catch (error) {
-            console.log('error', error)
             setError(error.message);
 
         }

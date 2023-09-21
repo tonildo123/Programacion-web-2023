@@ -36,13 +36,13 @@ export default function ProfileCard() {
 
     let selectedProfile;
     querySnapshot.forEach((doc) => {
-      console.log('que hay', doc.data())
+      // console.log('que hay', doc.data())
       selectedProfile = doc.data();
 
     });
     // SI EXISTE EN FIRESTORE LO MUESTRA
     if (selectedProfile) {
-      console.log('the one', selectedProfile)
+      // console.log('the one', selectedProfile)
       const user = {
         avatar: selectedProfile.avatar,
         name: selectedProfile.name,
@@ -53,14 +53,14 @@ export default function ProfileCard() {
       dispatch(profileSuccess(user))
 
     } else {
-      console.log('no found')
+      // console.log('no found')
     }
 
   }
 
   useEffect(() => {
     getProfileUsers()
-    console.log('state : ', state)
+    // console.log('state : ', state)
   }, [])
 
   useEffect(() => {

@@ -12,7 +12,6 @@ const Create = () => {
 
 
   const webcamRef = useRef(null);
-  const state = useSelector(state => state);
   const { id } = useSelector(state => state.logger.user)
   const [pickname, setPickname] = useState('');
   const [images, setImages] = useState([]);
@@ -23,9 +22,6 @@ const Create = () => {
   const [isFormValid, setIsFormValid] = useState(false);
 
 
-  useEffect(() => {
-    console.log('state : ', JSON.stringify(state));
-  }, []);
 
   const convertirBase64 = (archivos) => {
     Array.from(archivos).forEach(archivo => {

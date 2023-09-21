@@ -17,13 +17,13 @@ const Home = () => {
   const getPets = async () => {
 
     const data = await getDocs(petCollection);
-    console.log('data');
-    console.log(data);
+    // console.log('data');
+    // console.log(data);
 
     setPets(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
 
-    console.log('mascotas : ');
-    console.log(pets);
+    // console.log('mascotas : ');
+    // console.log(pets);
 
   }
 
@@ -39,7 +39,7 @@ const Home = () => {
 
   const confirmDelete = (id) => {
 
-    console.log(id)
+    // console.log(id)
 
     Swal.fire({
       title: '¿Esta usted seguro?',

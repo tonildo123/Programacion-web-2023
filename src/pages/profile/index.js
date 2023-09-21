@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { collection, addDoc, updateDoc, doc } from 'firebase/firestore';
 import { db, uploadFile } from '../../firebase';
 import { useSelector, useDispatch } from 'react-redux';
-import { CardMedia, Container, Grid, Card, CardContent, CardActions, Button } from '@mui/material';
+import { CardMedia, Grid, Card, CardContent, CardActions, Button } from '@mui/material';
 import ProfileCard from '../../components/ProfileCard';
 import Swal from 'sweetalert2'
 import Webcam from 'react-webcam'; // Import Webcam
@@ -13,7 +13,6 @@ const Profile = () => {
 
   const dispatch = useDispatch()
   const webcamRef = useRef(null);
-  const state = useSelector(state => state);
   const { id } = useSelector(state => state.logger.user)
   const [pickname, setPickname] = useState('');
   const [lastName, setlastName] = useState('');
@@ -25,11 +24,6 @@ const Profile = () => {
   const profileCollection = collection(db, 'ProfileUsers');
   const [isCapturing, setIsCapturing] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
-
-
-  useEffect(() => {
-    console.log('state : ', JSON.stringify(state));
-  }, []);
 
 
 

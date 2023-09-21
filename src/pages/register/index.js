@@ -4,7 +4,7 @@ import Alert from "@mui/material/Alert";
 import './style.css';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase';
-import { Outlet, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 
 
@@ -36,9 +36,8 @@ const Register = () => {
         }
 
         try {
-            await createUserWithEmailAndPassword(auth, email, password) //registrarme
+            await createUserWithEmailAndPassword(auth, email, password) 
                 .then(async (userCredential) => {
-                    console.log(userCredential)
                     Swal.fire({
                         title: 'Usuario creado con exito',
                         text: email,
@@ -49,12 +48,10 @@ const Register = () => {
                     navigate('/login')
                 })
                 .catch((error) => {
-                    console.log('error', error)
                     setError(error.message);
                 })
 
         } catch (error) {
-            console.log('error', error)
             setError(error.message);
 
         }
