@@ -14,8 +14,9 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { NavLink } from "react-router-dom";
+import { unlogger } from '../state/LoginSlice';
 
 const settingsLogged = [{ 'label': 'Mi Perfil', 'ruta': '/profile/edit' },
                   { 'label': 'Cambiar contraseña', 'ruta': '/profile/password' }];
@@ -26,10 +27,12 @@ const menuDrawerUnlogged = [{ 'label': 'Registrarme', 'ruta': '/register' },
                             { 'label': 'Contactanos', 'ruta': '/nosotros' },];
 
 const menuDrawerLogged = [{ 'label': 'Inicio', 'ruta': '/home' },
-                    { 'label': 'mascotas', 'ruta': "/pets/create" },
+                    { 'label': 'Mis mascotas', 'ruta': "/pets/create" },
                     { 'label': 'Cambiar contraseña', 'ruta': '/profile/password' }];                    
 
 function ResponsiveAppBar() {
+
+    const dispatch = useDispatch()
 
     const { logged } = useSelector(state => state.logger.user)
 
@@ -49,6 +52,9 @@ function ResponsiveAppBar() {
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
+    };
+    const Salir = () => {
+        dispatch(unlogger())
     };
 
     return (
@@ -110,8 +116,11 @@ function ResponsiveAppBar() {
                             ))}
                             {logged && menuDrawerLogged.map((page) => (
                                 <MenuItem key={page.label} onClick={handleCloseNavMenu}>
-                                    <Typography component={NavLink}
-                                        to={`${page.ruta}`} textAlign="center" style={{ color: 'black' }}>{page.label}</Typography>
+                                    <Typography 
+                                    component={NavLink}
+                                    to={`${page.ruta}`} 
+                                    textAlign="center" 
+                                    style={{ color: 'black' }}>{page.label}</Typography>
                                 </MenuItem>
                             ))}
                         </Menu>
@@ -143,7 +152,7 @@ function ResponsiveAppBar() {
                             to="/pets/create"
                             sx={{ pt: 1 }}
                         >
-                            Mascotas
+                            Mis mascotas
                         </Button>
                     </Box> 
                     : <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
@@ -189,9 +198,9 @@ function ResponsiveAppBar() {
                             
                             {logged &&
                                 <MenuItem onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center" >                                        
+                                    <Button textAlign="center" onClick={Salir} >                                        
                                         Salir                                     
-                                    </Typography>
+                                    </Button>
                                 </MenuItem>}
                             {!logged && settingsUnLogged.map((setting) => (
                                 <MenuItem key={setting} onClick={handleCloseUserMenu}>

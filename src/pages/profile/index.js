@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, addDoc, updateDoc, doc } from 'firebase/firestore';
+import { updateDoc, collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { db, uploadFile } from '../../firebase';
 import { useSelector, useDispatch } from 'react-redux';
-import { CardMedia, Grid, Card, CardContent, CardActions, Button } from '@mui/material';
+import { CardMedia, Grid, Card, CardContent, CardActions, Button, Typography } from '@mui/material';
 import ProfileCard from '../../components/ProfileCard';
 import Swal from 'sweetalert2'
 import Webcam from 'react-webcam'; // Import Webcam
@@ -14,19 +14,20 @@ const Profile = () => {
   const dispatch = useDispatch()
   const webcamRef = useRef(null);
   const { id } = useSelector(state => state.logger.user)
-  const [pickname, setPickname] = useState('');
-  const [lastName, setlastName] = useState('');
-  const [numberPhone, setnumberPhone] = useState('');
+  const { name, lastName, numberPhone, avatar } = useSelector(state => state.profileuser.profile)
+  const [pickname, setPickname] = useState(name != null ? name : '');
+  const [lastNameState, setlastName] = useState(lastName != null ? lastName : '');
+  const [numberPhoneState, setnumberPhone] = useState(numberPhone != null ? numberPhone : '');
   const [images, setImages] = useState([]);
   const [imagesName, setImagesName] = useState();
-  const [imageData, setImageData] = useState('https://e7.pngegg.com/pngimages/223/244/png-clipart-computer-icons-avatar-user-profile-avatar-heroes-rectangle.png');
+  const [imageData, setImageData] = useState(avatar != null ? avatar : 'https://via.placeholder.com/200x200');
   const navigate = useNavigate();
-  const profileCollection = collection(db, 'ProfileUsers');
   const [isCapturing, setIsCapturing] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isMismaImagen, setIsMismaImagen] = useState(true);
 
 
-
+  {/**creo un modal para elegir si selecciono una imagen o tomo una foto */ }
   const openImagePicker = () => {
     Swal.fire({
       title: 'Seleccionar imagen',
@@ -35,62 +36,121 @@ const Profile = () => {
       cancelButtonText: 'Seleccionar',
     }).then((result) => {
       if (result.isConfirmed) {
+        {/**tomo una foto */ }
         setIsCapturing(true);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
+        {/**selecciono una imagen*/ }
         document.getElementById('upload-button').click();
       }
     });
   };
+
   const captureImage = () => {
     const imageSrc = webcamRef.current.getScreenshot();
+    const timestamp = new Date().getTime(); // Genera un timestamp único
+    const imageName = `captured_${timestamp}.png`; // Nombre de la imagen
     const blob = dataURLtoBlob(imageSrc);
     setImageData(imageSrc);
     setIsFormValid(pickname !== '' && true);
     setIsCapturing(false);
+
+    // Actualiza el estado de imagesName con el nombre de la imagen
+    setImagesName(imageName);
+
+    // Verifica si se han seleccionado imágenes y actualiza setMismaImagen en consecuencia
+    setIsMismaImagen(false);
   };
+
 
   const store = async (e) => {
     e.preventDefault();
+
     try {
+      // Consulta para buscar el documento por "idUser"
+      const profileQuery = query(
+        collection(db, "ProfileUsers"),
+        where("idUser", "==", id)
+      );
 
-      const url = await uploadFile(imageData, imagesName, 'ProfileFolder')
+      // Realiza la consulta
+      const querySnapshot = await getDocs(profileQuery);
 
-      const profileDoc = doc(db, 'ProfileUsers', id)
-      const data = { name: pickname, lastName: lastName, avatar: url }
-      await updateDoc(profileDoc, data)
+      if (!querySnapshot.empty) {
+        // Si se encuentra al menos un documento, actualiza el primer documento que cumple con el filtro
+        const profileDoc = querySnapshot.docs[0].ref; // Obtener la referencia del documento
+
+        const url = isMismaImagen ? avatar : await uploadFile(imageData, imagesName, 'ProfileFolder');
+
+        // Datos que deseas actualizar
+        const dataToUpdate = {
+          name: pickname,
+          lastName: lastNameState,
+          avatar: url,
+          numberPhone: numberPhoneState,
+        };
+
+        // Actualiza el documento existente
+        await updateDoc(profileDoc, dataToUpdate);
+        const user = {
+          idUser: id,
+          avatar: url,
+          name: pickname,
+          lastName: lastNameState,
+          numberPhone: numberPhoneState,
+        };
+
+        dispatch(profileSuccess(user));
+      } else {
+        // Si no se encuentra ningún documento, crea uno nuevo
+        const profileCollection = collection(db, 'ProfileUsers');
+
+        const url = await uploadFile(imageData, imagesName, 'ProfileFolder');
+
+        // Datos para el nuevo documento
+        const dataToCreate = {
+          idUser: id,
+          name: pickname,
+          lastName: lastNameState,
+          avatar: url,
+          numberPhone: numberPhoneState,
+        };
+
+        // Crea un nuevo documento
+        await addDoc(profileCollection, dataToCreate);
+
+        const user = {
+          idUser: id,
+          avatar: url,
+          name: pickname,
+          lastName: lastNameState,
+          numberPhone: numberPhoneState,
+        };
+
+        dispatch(profileSuccess(user));
+      }
+
+      // Realiza las operaciones adicionales necesarias después de la actualización o creación del documento
 
       Swal.fire({
-        title: 'Guadado exitosamente!',
+        title: 'Guardado exitosamente!',
         icon: 'success',
         showCancelButton: true,
         confirmButtonText: 'OK',
-
       }).then((result) => {
         if (result.isConfirmed) {
-          const user = {
-            avatar: url,
-            name: pickname,
-            lastName: lastName,
-            numberPhone: numberPhone
-          }
-
-          dispatch(profileSuccess(user))
           navigate('/home');
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           navigate('/home');
         }
       });
-
     } catch (error) {
-
+      console.error(error);
       Swal.fire({
-        title: 'Ocurrio un error!',
+        title: 'Ocurrió un error!',
         icon: 'error',
         showCancelButton: true,
         confirmButtonText: 'OK',
-
-      })
-
+      });
     }
 
   };
@@ -105,8 +165,22 @@ const Profile = () => {
 
     let newImgsToState = readmultifiles(e, indexImg);
     let newImgsState = [...images, ...newImgsToState];
-    imageData(newImgsState);
+    setImageData(newImgsState);
+
+
+    // Captura el nombre de la primera imagen seleccionada (si la hay) y actualiza imagesName
+    if (newImgsToState.length > 0) {
+      const firstImage = newImgsToState[0];
+      setImagesName(firstImage.name);
+    }
+
+    // Verifica si se han seleccionado imágenes y actualiza setMismaImagen en consecuencia
+    if (newImgsToState.length > 0) {
+      setIsMismaImagen(false);
+    }
   };
+
+
 
   function readmultifiles(e, indexInicial) {
     const files = e.currentTarget.files;
@@ -155,8 +229,8 @@ const Profile = () => {
               <Webcam
                 ref={webcamRef}
                 audio={false}
-                width={640}
-                height={480}
+                width="100%"
+                height={200}
               />
               <CardActions>
                 <Button
@@ -196,6 +270,7 @@ const Profile = () => {
               <Button size="small" onClick={openImagePicker}>
                 SELECCIONAR IMAGEN
               </Button>
+              {!isMismaImagen && <Typography variant="h6">{imagesName}</Typography>}
             </CardContent>
             <CardContent>
               <input
@@ -208,7 +283,7 @@ const Profile = () => {
             <CardContent>
               <input
                 type="text"
-                value={lastName}
+                value={lastNameState}
                 onChange={(e) => setlastName(e.target.value)}
                 placeholder="Apellido"
               />
@@ -216,7 +291,7 @@ const Profile = () => {
             <CardContent>
               <input
                 type="number"
-                value={numberPhone}
+                value={numberPhoneState}
                 onChange={(e) => setnumberPhone(e.target.value)}
                 placeholder="Telefono"
               />
@@ -231,7 +306,7 @@ const Profile = () => {
           </div>
         </Card>
       </Grid>
-      <Grid item xs={12} md={3} sx={{ display: 'flex', backgroundColor:'#FEF5E7', justifyContent: 'center', alignItems: 'center' }}>
+      <Grid item xs={12} md={3} sx={{ display: 'flex', backgroundColor: '#FEF5E7', justifyContent: 'center', alignItems: 'center' }}>
         Publicidad
       </Grid>
     </Grid>

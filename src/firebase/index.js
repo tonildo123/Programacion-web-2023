@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
-import {getFirestore} from '@firebase/firestore';
+import { getFirestore } from '@firebase/firestore';
 import { getAuth } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { v4 } from 'uuid'
 
 const firebaseConfig = {
   apiKey: "AIzaSyABDggLbGI1cpYJruXzDPLDDZuLLQWgjVw",
@@ -23,13 +24,27 @@ const storage = getStorage(app);
  * @returns  {Promise<string>} url of the upladed file
  */
 
-export async function uploadFile(file, nameFile, folderName){
+export async function uploadFile(file, nameFile, folderName) {
+  console.log('llega')
+  console.log('archivo', file)
+  console.log('nombre', nameFile)
+  console.log('carpeta', folderName)
 
-  const storageRef = ref(storage, `${folderName}/${nameFile}`)
-  await uploadBytes(storageRef, file)
-  const url = await getDownloadURL(storageRef)
-  return url;
-  
+  try {
+
+    
+    const storageRef = ref(storage, `${folderName}/${v4()}${nameFile}`)
+    await uploadBytes(storageRef, file)
+    const url = await getDownloadURL(storageRef)
+    console.log('aqui deberia estar la url', url)
+    return url;
+  } catch (error) {
+    console.error('Error al cargar el archivo:', error);
+    throw error;
+  }
+
 }
 
-export {app, db, auth, firebaseConfig}
+
+
+export { app, db, auth, firebaseConfig }

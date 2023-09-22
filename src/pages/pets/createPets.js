@@ -1,20 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
-import { useSelector } from 'react-redux';
-import { CardMedia, Container, Grid, Card, CardContent, CardActions, Button } from '@mui/material';
+import { db, uploadFile } from '../../firebase';
+import { useSelector, useDispatch } from 'react-redux';
+import { CardMedia, Box, Grid, Card, CardContent, CardActions, Button, Typography } from '@mui/material';
 import ProfileCard from '../../components/ProfileCard';
 import Swal from 'sweetalert2'
 import Webcam from 'react-webcam'; // Import Webcam
+import { petArraySuccess } from '../../state/ArrayPetSlice';
 
 const Create = () => {
 
 
   const webcamRef = useRef(null);
   const { id } = useSelector(state => state.logger.user)
+  const dispatch = useDispatch()
   const [pickname, setPickname] = useState('');
-  const [images, setImages] = useState([]);
+  const [imagesName, setImagesName] = useState();
   const [imageData, setImageData] = useState('https://via.placeholder.com/200x200');
   const navigate = useNavigate();
   const petCollection = collection(db, 'Pet');
@@ -22,48 +24,41 @@ const Create = () => {
   const [isFormValid, setIsFormValid] = useState(false);
 
 
-
-  const convertirBase64 = (archivos) => {
-    Array.from(archivos).forEach(archivo => {
-      let reader = new FileReader();
-      reader.readAsDataURL(archivo);
-      reader.onload = function () {
-        let base64 = reader.result;
-        setImageData(base64);
-      };
-    });
-  };
-
   const openImagePicker = () => {
     Swal.fire({
       title: 'Seleccionar imagen',
-      // icon: 'info',
       showCancelButton: true,
       confirmButtonText: 'Tomar foto',
       cancelButtonText: 'Seleccionar',
     }).then((result) => {
       if (result.isConfirmed) {
-        // Handle "Tomar foto" option
-        setIsCapturing(true);
+        setIsCapturing(true);// Handle "Tomar foto" option
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         document.getElementById('upload-button').click(); // Trigger file input click for "Seleccionar" option
       }
     });
   };
+
+  {/*saco foto con camara*/ }
   const captureImage = () => {
     const imageSrc = webcamRef.current.getScreenshot();
-    // Do something with the captured image source (e.g., convert it to base64)
+    const timestamp = new Date().getTime(); // Genera un timestamp único
+    const imageName = `captured_${timestamp}.png`; // Nombre de la imagen
+    setImagesName(imageName)
     const blob = dataURLtoBlob(imageSrc);
-    convertirBase64(blob);
-    setImageData(imageSrc); // Actualiza el estado con la imagen capturada
-    setIsFormValid(pickname !== '' && true);
+    setImageData(blob);
     setIsCapturing(false);
+    setIsFormValid(true)
   };
 
-  const store = async (e) => {
-    e.preventDefault();
+  const store = async () => {
+
+
     try {
-      await addDoc(petCollection, { pickname: pickname, photo: imageData, idUser: id });
+
+      const url = await uploadFile(imageData, imagesName, 'PetsFolder');
+      const docRef = await addDoc(petCollection, { pickname: pickname, photo: url, idUser: id });
+      const newPetId = docRef.id;
       Swal.fire({
         title: 'Guadado exitosamente!',
         icon: 'success',
@@ -72,6 +67,14 @@ const Create = () => {
 
       }).then((result) => {
         if (result.isConfirmed) {
+          const pet = {
+            id: newPetId,
+            idUser: id,
+            pickname: pickname,
+            photo: url,
+          }
+
+          dispatch(petArraySuccess(pet))
           navigate('/home');
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           navigate('/home');
@@ -93,45 +96,21 @@ const Create = () => {
   };
 
   const changeInput = (e) => {
-    let indexImg;
-    if (images.length > 0) {
-      indexImg = images[images.length - 1].index + 1;
+    const file = e.target.files[0];
+
+    if (file) {
+      if (file.type.startsWith('image/')) {
+        setImageData(file)
+        const fileName = file.name;
+        setImagesName(fileName)
+        setIsFormValid(true)
+
+      } else {
+        alert('El archivo seleccionado no es una imagen.');
+      }
     } else {
-      indexImg = 0;
+      alert('No se ha seleccionado ningún archivo.');
     }
-
-    let newImgsToState = readmultifiles(e, indexImg);
-    let newImgsState = [...images, ...newImgsToState];
-    imageData(newImgsState);
-  };
-
-  function readmultifiles(e, indexInicial) {
-    const files = e.currentTarget.files;
-    convertirBase64(e.currentTarget.files);
-
-    const arrayImages = [];
-
-    Object.keys(files).forEach((i) => {
-      const file = files[i];
-      let url = URL.createObjectURL(file);
-
-      arrayImages.push({
-        index: indexInicial,
-        name: file.name,
-        url,
-        file
-      });
-
-      indexInicial++;
-    });
-
-    return arrayImages;
-  }
-
-  const handleNicknameChange = (e) => {
-    const newNickname = e.target.value;
-    setPickname(newNickname);
-    setIsFormValid(newNickname !== '' && (imageData || isCapturing));
   };
 
   const dataURLtoBlob = (dataURL) => {
@@ -152,15 +131,19 @@ const Create = () => {
       <Grid item xs={12} sm={3} sx={{ backgroundColor: '#FEF5E7' }}>
         <ProfileCard />
       </Grid>
-      <Grid item xs={12} sm={6} sx={{ backgroundColor: '#FAD7A0', pt: '1%' }}>
-        <Card sx={{ backgroundColor: '#FAD7A0', maxWidth: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', }}>
+      <Grid item xs={12} sm={6} sx={{ backgroundColor: '#FAD7A0' }}>
+        <Card
+          sx={{
+            backgroundColor: '#FAD7A0', maxWidth: '100%', display: 'flex',
+            flexDirection: 'column', justifyContent: 'center', alignItems: 'center', pt: '1%',
+          }}>
           {isCapturing ? (
-            <div>
+            <Box>
               <Webcam
                 ref={webcamRef}
                 audio={false}
-                width={640}
-                height={480}
+                width="100%"
+                height={200}
               />
               <CardActions>
                 <Button
@@ -173,12 +156,50 @@ const Create = () => {
                   Capturar
                 </Button>
               </CardActions>
-            </div>
+            </Box>
           ) : (
             <CardMedia
-              sx={{ height: 300, backgroundSize: 'contain', backgroundImage: `url(${imageData})` }}
+              sx={{
+                height: 250,
+                width: 200,
+                backgroundSize: 'fill',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
               title="Captured Image"
-            />
+            >
+              <div
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  display: 'inline-block',
+                }}
+              >
+                {typeof imageData === 'string' ? (
+                  <img
+                    src={imageData}
+                    alt="Imagen"
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      objectFit: 'contain',
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={URL.createObjectURL(imageData)}
+                    alt="Imagen"
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      objectFit: 'contain',
+                    }}
+                  />
+                )}
+              </div>
+            </CardMedia>
+
           )}
           <div
             style={{
@@ -197,6 +218,7 @@ const Create = () => {
                 style={{ display: 'none' }}
                 id="upload-button"
               />
+              {imagesName != undefined && <Typography variant="h6">{imagesName}</Typography>}
               <Button size="small" onClick={openImagePicker}>
                 SELECCIONAR IMAGEN
               </Button>
@@ -214,11 +236,16 @@ const Create = () => {
                 fullWidth
                 variant="contained"
                 color="primary"
-                disabled={!isFormValid}
-                sx={{ marginTop: 2, backgroundColor: '#DC7633' }} onClick={store}>Guardar</Button>
+                disabled={!isFormValid || pickname.trim() === '' || !imageData}
+                sx={{ marginTop: 2, backgroundColor: '#DC7633' }} onClick={() => { store() }}>Guardar</Button>
             </CardActions>
           </div>
         </Card>
+        <Button
+          fullWidth
+          component={NavLink}
+          to="/pets/mis-mascotas"
+          sx={{ backgroundColor: 'white', color: '#DC7633', fontWeight: 'bold' }}>Ver mis mascotas</Button>
       </Grid>
       <Grid item xs={12} md={3} sx={{ display: 'flex', backgroundColor: '#FEF5E7', justifyContent: 'center', alignItems: 'center' }}>
         Publicidad

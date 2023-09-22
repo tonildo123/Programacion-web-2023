@@ -20,10 +20,10 @@ export default function ProfileCard() {
   const { name, lastName, numberPhone, status, avatar } = useSelector(state => state.profileuser.profile)
   const dispatch = useDispatch()
 
-  const [foto, setFoto] = useState('https://via.placeholder.com/200x200')
-  const [nombre, setNombre] = useState('Mi nombre')
-  const [apellido, setApellido] = useState('Apellido')
-  const [telefono, setTelefono] = useState()
+  const [foto, setFoto] = useState(avatar != null ? avatar : 'https://via.placeholder.com/200x200')
+  const [nombre, setNombre] = useState(name != null ? name : 'Mi nombre')
+  const [apellido, setApellido] = useState(lastName != null ? lastName : 'Apellido')
+  const [telefono, setTelefono] = useState(numberPhone != null ? numberPhone : '' )
 
 
   const getProfileUsers = async () => {
@@ -44,6 +44,7 @@ export default function ProfileCard() {
     if (selectedProfile) {
       // console.log('the one', selectedProfile)
       const user = {
+        idUser: id,
         avatar: selectedProfile.avatar,
         name: selectedProfile.name,
         lastName: selectedProfile.lastName,
@@ -53,7 +54,7 @@ export default function ProfileCard() {
       dispatch(profileSuccess(user))
 
     } else {
-      // console.log('no found')
+      console.log('no found')
     }
 
   }
@@ -70,7 +71,7 @@ export default function ProfileCard() {
       setNombre(name)
       setTelefono(numberPhone)
     }
-  }, [status])
+  }, [state.profileuser.profile])
 
 
   return (
@@ -82,10 +83,10 @@ export default function ProfileCard() {
         sx={{ borderRadius: '50%', maxHeight: "200px", maxWidth: "200px", marginX: "auto", paddingTop: "1em"}} // Estilo para la imagen redondeada
       />
       <CardContent sx={{ textAlign: 'center' }}> {/* Centrar el contenido */}
-        <Typography variant="h2">
+        <Typography variant="h4">
           {nombre} {apellido}
         </Typography>
-        <Typography variant="h3">
+        <Typography variant="h6">
           {telefono}
         </Typography>
       </CardContent>

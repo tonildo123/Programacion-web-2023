@@ -5,6 +5,7 @@ import AddressSlice from './AddressSlice'
 import PetSlice from './PetSlice'
 import OwnSlice from './OwnSlice'
 import HCSlice  from './ClinicalSlice'
+import ArrayPetSlice from './ArrayPetSlice'
 
 
 export const store = configureStore({
@@ -13,6 +14,7 @@ export const store = configureStore({
     profileuser: ProfileSlice,
     addressuser: AddressSlice,
     petuser: PetSlice,
+    userPetsArray: ArrayPetSlice,
     ownuser: OwnSlice,
     hcuser: HCSlice,    
   },
