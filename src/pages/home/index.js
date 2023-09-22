@@ -70,9 +70,9 @@ const Home = () => {
 
   const renderCard = (card, index) => {
     return (
-      <Grid item xs={6} md={3} key={index}>
-        <Card sx={{ height: "100", margin: 1 }} >
-          <CardMedia component="img" alt="Card Image" image={card.photo} />
+      <Grid item xs={9} sm={6} md={3} key={index} sx={{margin: 1}}>
+        <Card sx={{ margin: 1, height: "100%" }} >
+          <CardMedia component="img" alt="Card Image" image={card.photo}/>
           <CardContent>
             <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>{card.pickname}</Typography>
             <Typography variant="body1">Vivo en ...</Typography>
@@ -93,18 +93,20 @@ const Home = () => {
 
 
   return (
-    <Container sx={{ display: 'flex', alignItems: 'flex-start', padding: 0 }} maxWidth="xl" >
-      <Grid container>
-        <Grid item xs={12} md={3} className="hidden sm:block" sx={{ backgroundColor: '#FAD7A0' }}>
+    <Container maxWidth="xl" style={{paddingLeft: 0, paddingRight: 0}}>
+      <Grid container sx={{height: "100%"}}>
+        <Grid item xs={12} sm={4} lg={3} className="hidden sm:block" sx={{ backgroundColor: '#FAD7A0' }}>
           <ProfileCard />
         </Grid>
-        <Grid item xs={12} md={6} sx={{ backgroundColor: '#FAD7A0' }}>
-          <Grid container>
+        <Grid item xs={12} sm={8} lg={6} sx={{ backgroundColor: '#FAD7A0' }}>
+          <Grid container style={{justifyContent: "center"}}>
             {pets.length === 0 ? <welcomeComponent /> : pets.map(renderCard)}
           </Grid>
         </Grid>
-        <Grid item xs={12} className="hidden sm:block" sx={{ height: '100vh', display: 'flex', backgroundColor: '#F8C471', justifyContent: 'center', alignItems: 'center' }}>
-          Publicidad
+        <Grid item xs={12} lg={3} className="hidden sm:block" sx={{ height: '100vh', display: 'flex', backgroundColor: '#F8C471', justifyContent: 'center', alignItems: 'center' }}>
+          <Typography variant='h4'>
+            Publicidad
+          </Typography>
         </Grid>
       </Grid>
     </Container>
