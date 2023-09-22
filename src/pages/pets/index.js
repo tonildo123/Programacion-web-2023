@@ -3,7 +3,7 @@ import { Button, Typography, Grid, Card, CardContent, CardMedia, CardActions } f
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 import { NavLink } from "react-router-dom";
-import { db } from '../../firebase';
+import { db, deleteFile } from '../../firebase';
 import ProfileCard from '../../components/ProfileCard';
 import { useDispatch, useSelector } from 'react-redux';
 import WelcomeComponent from '../../components/welcomeComponent';
@@ -35,11 +35,12 @@ const MisMascotas = () => {
 
   }
 
-  const deletePets = async (id) => {
+  const deletePets = async (card) => {
 
-    const petsDoc = doc(db, "Pet", id);
+    const petsDoc = doc(db, "Pet", card.id);
     await deleteDoc(petsDoc);
-    dispatch(petArrayRemove(id));
+    // await deleteFile(card.photo, 'PetsFolder')
+    dispatch(petArrayRemove(card.id));
     getPets();
 
   }
@@ -57,7 +58,7 @@ const MisMascotas = () => {
       confirmButtonText: 'Si, Eliminar!'
     }).then((result) => {
       if (result.isConfirmed) {
-        deletePets(card.id);
+        deletePets(card);
         Swal.fire(
           'Eliminado!',
           'Su producto fue borrado.',

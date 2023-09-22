@@ -9,7 +9,7 @@ import Swal from 'sweetalert2'
 import Webcam from 'react-webcam'; // Import Webcam
 import { petSuccess } from '../../state/PetSlice';
 
-const EditPet = () => {
+const ModalDescription = () => {
 
     const dispatch = useDispatch()
     const webcamRef = useRef(null);
@@ -265,4 +265,4 @@ const EditPet = () => {
     );
 };
 
-export default EditPet;
+export default ModalDescription;

@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from '@firebase/firestore';
 import { getAuth } from "firebase/auth";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { v4 } from 'uuid'
 
 const firebaseConfig = {
@@ -25,14 +25,10 @@ const storage = getStorage(app);
  */
 
 export async function uploadFile(file, nameFile, folderName) {
-  console.log('llega')
-  console.log('archivo', file)
-  console.log('nombre', nameFile)
-  console.log('carpeta', folderName)
 
   try {
 
-    
+
     const storageRef = ref(storage, `${folderName}/${v4()}${nameFile}`)
     await uploadBytes(storageRef, file)
     const url = await getDownloadURL(storageRef)
@@ -44,6 +40,7 @@ export async function uploadFile(file, nameFile, folderName) {
   }
 
 }
+
 
 
 
