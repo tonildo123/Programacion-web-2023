@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Button, Typography, Grid, Card, CardContent, CardMedia,  CardActions } from '@mui/material';
-import { collection, getDocs,} from 'firebase/firestore';
+import { Button, Typography, Grid, Card, CardContent, CardMedia, CardActions } from '@mui/material';
+import { collection, getDocs, } from 'firebase/firestore';
 import { NavLink } from "react-router-dom";
 import { db } from '../../firebase';
 import ProfileCard from '../../components/ProfileCard';
 import WelcomeComponent from '../../components/welcomeComponent';
 import { useSelector, useDispatch } from 'react-redux';
 import { petArraySuccess } from '../../state/ArrayPetSlice';
+import ModalDescription from '../../components/ModalDescription';
 
 
 const Home = () => {
@@ -16,10 +17,22 @@ const Home = () => {
   const dispatch = useDispatch();
   const state = useSelector(state => state)
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+
+  const openModal = (item) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const getPets = async () => {
 
-    if(state.userPetsArray.pets.length > 0){
+    if (state.userPetsArray.pets.length > 0) {
 
       setPets(state.userPetsArray.pets)
 
@@ -29,7 +42,7 @@ const Home = () => {
       setPets(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
     }
 
-    
+
 
   }
 
@@ -44,26 +57,26 @@ const Home = () => {
           pickname: pets[i].pickname,
           photo: pets[i].photo,
         };
-  
+
         // Verifica si la mascota ya existe en el estado antes de agregarla
         const isPetAlreadyAdded = state.userPetsArray.pets.some(
           (existingPet) => existingPet.id === pet.id
         );
-  
+
         if (!isPetAlreadyAdded) {
           dispatch(petArraySuccess(pet));
         }
       }
     }
   }, [pets.length]);
-  
+
 
 
 
   const renderCard = (card, index) => {
     return (
       <Grid item key={index}>
-        <Card sx={{ height: "350px", width: { xs: "100%", sm: "200px" }, p: 1, my:'2px' }} >
+        <Card sx={{ height: "350px", width: { xs: "100%", sm: "200px" }, p: 1, my: '2px' }} >
           <CardMedia
             component="img"
             alt="Card Image"
@@ -76,9 +89,9 @@ const Home = () => {
           <CardActions>
             <Button
               color="inherit"
-              component={NavLink}
-              to="/pets/create"
-              sx={{ pt: 1, whiteSpace: 'nowrap', backgroundColor: '#DC7633', color: 'white' }}              >
+              onClick={() => openModal(card)} // Pasa el elemento 'card' seleccionado
+              sx={{ pt: 1, whiteSpace: 'nowrap', backgroundColor: '#DC7633', color: 'white' }}
+            >
               Ver detallado
             </Button>
           </CardActions>
@@ -94,13 +107,16 @@ const Home = () => {
         <ProfileCard />
       </Grid>
       <Grid item xs={12} md={6} sx={{ backgroundColor: '#FAD7A0' }}>
+      {isModalOpen && selectedItem && (
+      <ModalDescription item={selectedItem} onClose={() => closeModal()} />
+      )}
         <Grid container sx={{ justifyContent: 'space-evenly' }}>
           {pets.length === 0 ? <WelcomeComponent /> : pets.map(renderCard)}
         </Grid>
       </Grid>
       <Grid item xs={12} md={3} sx={{ display: 'flex', backgroundColor: '#FEF5E7', justifyContent: 'center', alignItems: 'center' }}>
         Publicidad
-      </Grid>
+      </Grid>      
     </Grid>
   )
 }

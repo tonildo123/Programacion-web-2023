@@ -50,15 +50,12 @@ const Profile = () => {
     const timestamp = new Date().getTime(); // Genera un timestamp único
     const imageName = `captured_${timestamp}.png`; // Nombre de la imagen
     const blob = dataURLtoBlob(imageSrc);
-    setImageData(imageSrc);
+    setImageData(blob);
     setIsFormValid(pickname !== '' && true);
     setIsCapturing(false);
-
-    // Actualiza el estado de imagesName con el nombre de la imagen
     setImagesName(imageName);
-
-    // Verifica si se han seleccionado imágenes y actualiza setMismaImagen en consecuencia
     setIsMismaImagen(false);
+
   };
 
 
@@ -89,7 +86,6 @@ const Profile = () => {
           numberPhone: numberPhoneState,
         };
 
-        // Actualiza el documento existente
         await updateDoc(profileDoc, dataToUpdate);
         const user = {
           idUser: id,
@@ -101,12 +97,10 @@ const Profile = () => {
 
         dispatch(profileSuccess(user));
       } else {
-        // Si no se encuentra ningún documento, crea uno nuevo
         const profileCollection = collection(db, 'ProfileUsers');
 
         const url = await uploadFile(imageData, imagesName, 'ProfileFolder');
 
-        // Datos para el nuevo documento
         const dataToCreate = {
           idUser: id,
           name: pickname,
@@ -115,7 +109,6 @@ const Profile = () => {
           numberPhone: numberPhoneState,
         };
 
-        // Crea un nuevo documento
         await addDoc(profileCollection, dataToCreate);
 
         const user = {
@@ -128,8 +121,6 @@ const Profile = () => {
 
         dispatch(profileSuccess(user));
       }
-
-      // Realiza las operaciones adicionales necesarias después de la actualización o creación del documento
 
       Swal.fire({
         title: 'Guardado exitosamente!',
@@ -156,53 +147,23 @@ const Profile = () => {
   };
 
   const changeInput = (e) => {
-    let indexImg;
-    if (images.length > 0) {
-      indexImg = images[images.length - 1].index + 1;
+    const file = e.target.files[0];
+    if (file) {
+      if (file.type.startsWith('image/')) {
+        setImageData(file)
+        const fileName = file.name;
+        setImagesName(fileName)
+        setIsMismaImagen(false)
+
+      } else {
+        alert('El archivo seleccionado no es una imagen.');
+      }
     } else {
-      indexImg = 0;
-    }
-
-    let newImgsToState = readmultifiles(e, indexImg);
-    let newImgsState = [...images, ...newImgsToState];
-    setImageData(newImgsState);
-
-
-    // Captura el nombre de la primera imagen seleccionada (si la hay) y actualiza imagesName
-    if (newImgsToState.length > 0) {
-      const firstImage = newImgsToState[0];
-      setImagesName(firstImage.name);
-    }
-
-    // Verifica si se han seleccionado imágenes y actualiza setMismaImagen en consecuencia
-    if (newImgsToState.length > 0) {
-      setIsMismaImagen(false);
+      alert('No se ha seleccionado ningún archivo.');
     }
   };
 
 
-
-  function readmultifiles(e, indexInicial) {
-    const files = e.currentTarget.files;
-
-    const arrayImages = [];
-
-    Object.keys(files).forEach((i) => {
-      const file = files[i];
-      let url = URL.createObjectURL(file);
-
-      arrayImages.push({
-        index: indexInicial,
-        name: file.name,
-        url,
-        file
-      });
-
-      indexInicial++;
-    });
-
-    return arrayImages;
-  }
 
   const dataURLtoBlob = (dataURL) => {
     const arr = dataURL.split(',');
@@ -222,8 +183,11 @@ const Profile = () => {
       <Grid item xs={12} sm={3} sx={{ backgroundColor: '#FEF5E7', }}>
         <ProfileCard />
       </Grid>
-      <Grid item xs={12} sm={6} sx={{ backgroundColor: '#FAD7A0', pt: '1%' }}>
-        <Card sx={{ backgroundColor: '#FAD7A0', maxWidth: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', }}>
+      <Grid item xs={12} sm={6} sx={{ backgroundColor: '#FAD7A0' }}>
+        <Card sx={{
+          backgroundColor: '#FAD7A0', maxWidth: '100%', display: 'flex',
+          flexDirection: 'column', justifyContent: 'center', alignItems: 'center', pt: '1%',
+        }}>
           {isCapturing ? (
             <div>
               <Webcam
@@ -246,9 +210,46 @@ const Profile = () => {
             </div>
           ) : (
             <CardMedia
-              sx={{ height: 300, backgroundSize: 'contain', backgroundImage: `url(${imageData})` }}
+              sx={{
+                height: 250,
+                width: 200,
+                backgroundSize: 'fill',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
               title="Captured Image"
-            />
+            >
+              <div
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  display: 'inline-block',
+                }}
+              >
+                {typeof imageData === 'string' ? (
+                  <img
+                    src={imageData}
+                    alt="Imagen"
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      objectFit: 'contain',
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={URL.createObjectURL(imageData)}
+                    alt="Imagen"
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      objectFit: 'contain',
+                    }}
+                  />
+                )}
+              </div>
+            </CardMedia>
           )}
           <div
             style={{

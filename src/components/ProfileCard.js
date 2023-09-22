@@ -19,7 +19,6 @@ export default function ProfileCard() {
   const { id } = useSelector(state => state.logger.user)
   const { name, lastName, numberPhone, status, avatar } = useSelector(state => state.profileuser.profile)
   const dispatch = useDispatch()
-
   const [foto, setFoto] = useState(avatar != null ? avatar : 'https://via.placeholder.com/200x200')
   const [nombre, setNombre] = useState(name != null ? name : 'Mi nombre')
   const [apellido, setApellido] = useState(lastName != null ? lastName : 'Apellido')
@@ -36,7 +35,7 @@ export default function ProfileCard() {
 
     let selectedProfile;
     querySnapshot.forEach((doc) => {
-      // console.log('que hay', doc.data())
+      console.log('que hay', doc.data())
       selectedProfile = doc.data();
 
     });
@@ -61,7 +60,6 @@ export default function ProfileCard() {
 
   useEffect(() => {
     getProfileUsers()
-    // console.log('state : ', state)
   }, [])
 
   useEffect(() => {
@@ -82,12 +80,12 @@ export default function ProfileCard() {
         alt="Imagen Usuario"
         sx={{ borderRadius: '50%', maxHeight: "200px", maxWidth: "200px", marginX: "auto", paddingTop: "1em"}} // Estilo para la imagen redondeada
       />
-      <CardContent sx={{ textAlign: 'center' }}> {/* Centrar el contenido */}
+      <CardContent sx={{ textAlign: 'center' }}> 
         <Typography variant="h4">
           {nombre} {apellido}
         </Typography>
         <Typography variant="h6">
-          {telefono}
+          {telefono} 
         </Typography>
       </CardContent>
       <CardActions>

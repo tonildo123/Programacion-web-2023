@@ -42,8 +42,8 @@ const EditPet = () => {
     const captureImage = () => {
         setMismaIamgen(false)
         const imageSrc = webcamRef.current.getScreenshot();
-        const timestamp = new Date().getTime(); // Genera un timestamp único
-        const imageName = `captured_${timestamp}.png`; // Nombre de la imagen
+        const timestamp = new Date().getTime(); 
+        const imageName = `captured_${timestamp}.png`; 
         setImagesName(imageName)
         const blob = dataURLtoBlob(imageSrc);
         setImageData(blob);
@@ -51,7 +51,6 @@ const EditPet = () => {
     };
 
     const store = async () => {
-        // e.preventDefault();
 
         try {
             const petDocument = doc(db, 'Pet', id)
@@ -66,7 +65,6 @@ const EditPet = () => {
                 photo: url,
             };
 
-            // Actualiza el documento existente
             await updateDoc(petDocument, dataToUpdate);
             const pet = {
                 id: id,
@@ -77,8 +75,6 @@ const EditPet = () => {
 
             dispatch(petSuccess(pet))
 
-
-            // Realiza las operaciones adicionales necesarias después de la actualización o creación del documento
 
             Swal.fire({
                 title: 'Guardado exitosamente!',
