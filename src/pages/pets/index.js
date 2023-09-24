@@ -1,9 +1,10 @@
+/* eslint-disable */
 import { useEffect, useState } from 'react';
 import { Button, Typography, Grid, Card, CardContent, CardMedia, CardActions } from '@mui/material';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 import { NavLink } from "react-router-dom";
-import { db, deleteFile } from '../../firebase';
+import { db } from '../../firebase';
 import ProfileCard from '../../components/ProfileCard';
 import { useDispatch, useSelector } from 'react-redux';
 import WelcomeComponent from '../../components/welcomeComponent';
@@ -151,7 +152,11 @@ const MisMascotas = () => {
       </Grid>
       <Grid item xs={12} md={6} sx={{ backgroundColor: '#FAD7A0' }}>
         <Grid container sx={{ justifyContent: 'space-evenly' }}>
-          {pets.length === 0 ? <WelcomeComponent /> : pets.map(renderCard)}
+          {pets.length === 0 ? <WelcomeComponent /> : (
+          pets
+            .filter(pet => pet.idUser == state.logger.user.id) 
+            .map(renderCard) 
+        )}
         </Grid>
       </Grid>
       <Grid item xs={12} md={3} sx={{ display: 'flex', backgroundColor: '#FEF5E7', justifyContent: 'center', alignItems: 'center' }}>

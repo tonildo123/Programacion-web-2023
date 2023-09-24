@@ -1,7 +1,7 @@
+/* eslint-disable */
 import { useEffect, useState } from 'react';
 import { Button, Typography, Grid, Card, CardContent, CardMedia, CardActions } from '@mui/material';
 import { collection, getDocs, } from 'firebase/firestore';
-import { NavLink } from "react-router-dom";
 import { db } from '../../firebase';
 import ProfileCard from '../../components/ProfileCard';
 import WelcomeComponent from '../../components/welcomeComponent';
@@ -75,21 +75,21 @@ const Home = () => {
 
   const renderCard = (card, index) => {
     return (
-      <Grid item key={index}>
-        <Card sx={{ height: "350px", width: { xs: "100%", sm: "200px" }, p: 1, my: '2px' }} >
+      <Grid item key={card.id}>
+        <Card sx={{ height: "320px", width: { xs: "100%", sm: "200px" }, px: 1, my: '2px' }} >
           <CardMedia
             component="img"
             alt="Card Image"
             image={card.photo}
             sx={{ width: '100%', height: '200px' }} />
           <CardContent>
-            <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>{card.pickname}</Typography>
-            <Typography variant="body1">Vivo en ...</Typography>
+            <Typography variant="h6" sx={{ whiteSpace: 'nowrap', fontWeight:'bold' }}>{card.pickname}</Typography>
           </CardContent>
           <CardActions>
             <Button
+            fullWidth
               color="inherit"
-              onClick={() => openModal(card)} // Pasa el elemento 'card' seleccionado
+              onClick={() => openModal(card)}
               sx={{ pt: 1, whiteSpace: 'nowrap', backgroundColor: '#DC7633', color: 'white' }}
             >
               Ver detallado

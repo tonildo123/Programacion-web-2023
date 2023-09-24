@@ -8,6 +8,7 @@ import Nosotros from "../pages/nosostros";
 import Layout from "../components/LayoutComponent";
 import MisMascotas from "../pages/pets";
 import EditPet from "../pages/pets/EditPet";
+import AddressPage from "../pages/address";
 
 const RoutesPrivate = () => (
     <Layout>
@@ -18,6 +19,7 @@ const RoutesPrivate = () => (
             <Route path='/pets/mis-mascotas/edit' element={<EditPet />} />
             <Route path='/profile/owns' element={<Owns />} />
             <Route path='/profile/edit' element={<Profile />} />
+            <Route path='/profile/address' element={<AddressPage />} />
             <Route path='/pets/hc' element={<HC />} />
             <Route path='/nosotros' element={<Nosotros />} />
             <Route path='*' element={<Navigate to='/home' replace />} />

@@ -1,16 +1,20 @@
+/* eslint-disable */
 import {
   Button,
   Card,
   CardActions,
   CardContent,
   CardMedia,
-  Typography
+  Typography,Grid
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { useSelector, useDispatch } from 'react-redux';
 import { profileSuccess } from "../state/Profileslice";
+import PlaceIcon from '@mui/icons-material/Place';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import { NavLink } from "react-router-dom";
 
 export default function ProfileCard() {
@@ -22,20 +26,19 @@ export default function ProfileCard() {
   const [foto, setFoto] = useState(avatar != null ? avatar : 'https://via.placeholder.com/200x200')
   const [nombre, setNombre] = useState(name != null ? name : 'Mi nombre')
   const [apellido, setApellido] = useState(lastName != null ? lastName : 'Apellido')
-  const [telefono, setTelefono] = useState(numberPhone != null ? numberPhone : '' )
+  const [telefono, setTelefono] = useState(numberPhone != null ? numberPhone : '')
 
 
   const getProfileUsers = async () => {
 
-    const patientsQuery = query(
+    const profileQuery = query(
       collection(db, "ProfileUsers"),
       where("idUser", "==", id)
     );
-    const querySnapshot = await getDocs(patientsQuery);
+    const querySnapshot = await getDocs(profileQuery);
 
     let selectedProfile;
     querySnapshot.forEach((doc) => {
-      console.log('que hay', doc.data())
       selectedProfile = doc.data();
 
     });
@@ -58,45 +61,59 @@ export default function ProfileCard() {
 
   }
 
-  useEffect(() => {
-    getProfileUsers()
-  }, [])
 
   useEffect(() => {
+    getProfileUsers()
+
     if (status != null) {
       setApellido(lastName)
       setFoto(avatar)
       setNombre(name)
       setTelefono(numberPhone)
     }
-  }, [state.profileuser.profile])
+  }, [status])
 
 
   return (
-    <Card sx={{ margin: '5'}}>
+    <Card sx={{ margin: '5' }}>
       <CardMedia
         component="img"
         image={foto}
         alt="Imagen Usuario"
-        sx={{ borderRadius: '50%', maxHeight: "200px", maxWidth: "200px", marginX: "auto", paddingTop: "1em"}} // Estilo para la imagen redondeada
+        sx={{ borderRadius: '50%', maxHeight: "200px", maxWidth: "200px", marginX: "auto", paddingTop: "1em" }} // Estilo para la imagen redondeada
       />
-      <CardContent sx={{ textAlign: 'center' }}> 
+      <CardContent sx={{ textAlign: 'center' }}>
         <Typography variant="h4">
           {nombre} {apellido}
         </Typography>
         <Typography variant="h6">
-          {telefono} 
+          {telefono}
         </Typography>
       </CardContent>
       <CardActions>
-        <Button fullWidth
-          variant="contained"
-          color="primary"
-          component={NavLink}
-          to="/profile/edit"
-          sx={{ marginTop: 2, backgroundColor: '#DC7633' }}
-        >Editar</Button>
+        <Grid container direction="column" alignItems="center" spacing={1}>
+          <Grid item sx={{width:'100%'}}>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              component={NavLink}
+              to="/profile/edit"
+              sx={{ backgroundColor: '#DC7633', fontWeight:'bold' }}
+            >
+              Editar
+            </Button>
+          </Grid>
+          <Grid item>
+            <Tooltip title="Ver domicilio">
+              <IconButton component={NavLink} to="/profile/address">
+                <PlaceIcon sx={{ fontSize: { xs: 26, sm: 30 }, color: '#DC7633' }} />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+        </Grid>
       </CardActions>
+
     </Card>
 
   );

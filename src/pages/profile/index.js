@@ -18,16 +18,14 @@ const Profile = () => {
   const [pickname, setPickname] = useState(name != null ? name : '');
   const [lastNameState, setlastName] = useState(lastName != null ? lastName : '');
   const [numberPhoneState, setnumberPhone] = useState(numberPhone != null ? numberPhone : '');
-  const [images, setImages] = useState([]);
   const [imagesName, setImagesName] = useState();
   const [imageData, setImageData] = useState(avatar != null ? avatar : 'https://via.placeholder.com/200x200');
   const navigate = useNavigate();
   const [isCapturing, setIsCapturing] = useState(false);
-  const [isFormValid, setIsFormValid] = useState(false);
+  // const [isFormValid, setIsFormValid] = useState(false);
   const [isMismaImagen, setIsMismaImagen] = useState(true);
 
 
-  {/**creo un modal para elegir si selecciono una imagen o tomo una foto */ }
   const openImagePicker = () => {
     Swal.fire({
       title: 'Seleccionar imagen',
@@ -36,10 +34,8 @@ const Profile = () => {
       cancelButtonText: 'Seleccionar',
     }).then((result) => {
       if (result.isConfirmed) {
-        {/**tomo una foto */ }
         setIsCapturing(true);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        {/**selecciono una imagen*/ }
         document.getElementById('upload-button').click();
       }
     });
@@ -51,7 +47,7 @@ const Profile = () => {
     const imageName = `captured_${timestamp}.png`; // Nombre de la imagen
     const blob = dataURLtoBlob(imageSrc);
     setImageData(blob);
-    setIsFormValid(pickname !== '' && true);
+    // setIsFormValid(pickname !== '' && true);
     setIsCapturing(false);
     setImagesName(imageName);
     setIsMismaImagen(false);
@@ -154,6 +150,9 @@ const Profile = () => {
         const fileName = file.name;
         setImagesName(fileName)
         setIsMismaImagen(false)
+        // setIsFormValid(pickname !== '' && true);
+
+        
 
       } else {
         alert('El archivo seleccionado no es una imagen.');
@@ -302,6 +301,7 @@ const Profile = () => {
                 fullWidth
                 variant="contained"
                 color="primary"
+                disabled={pickname.trim() === ''}
                 sx={{ marginTop: 2, backgroundColor: '#DC7633' }} onClick={store}>Guardar cambios</Button>
             </CardActions>
           </div>

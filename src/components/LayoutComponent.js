@@ -1,14 +1,5 @@
-import {
-  Container,
-  AppBar,
-  Typography,
-  Box,
-  Grid,
-
-} from '@mui/material';
+import { Container} from '@mui/material';
 import ResponsiveAppBar from './Navbar';
-import PetsIcon from '@mui/icons-material/Pets';
-import { NavLink } from 'react-router-dom';
 import Footer from './Footer';
 
 

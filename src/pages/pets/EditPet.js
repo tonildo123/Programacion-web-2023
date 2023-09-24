@@ -38,7 +38,6 @@ const EditPet = () => {
         });
     };
 
-    {/*saco foto con camara*/ }
     const captureImage = () => {
         setMismaIamgen(false)
         const imageSrc = webcamRef.current.getScreenshot();

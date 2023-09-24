@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+/* eslint-disable */
+import React, { useState, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { collection, addDoc } from 'firebase/firestore';
 import { db, uploadFile } from '../../firebase';
@@ -38,8 +39,6 @@ const Create = () => {
       }
     });
   };
-
-  {/*saco foto con camara*/ }
   const captureImage = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     const timestamp = new Date().getTime(); // Genera un timestamp único
