@@ -2,20 +2,20 @@ import { useState } from 'react';
 import { TextField, Button, Container, Paper, Typography, Grid } from '@mui/material';
 import Alert from "@mui/material/Alert";
 import './style.css';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../firebase';
-import { useNavigate } from "react-router-dom";
-import Swal from 'sweetalert2';
+
+
+import useFirebase from '../../hooks/useFirebase';
 
 
 
 const Register = () => {
 
-    const navigate = useNavigate();
+    
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [repassword, setRepassword] = useState('');
-    const [error, setError] = useState(null);
+
+    const { handleRegister, error, setError } = useFirebase()
 
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
@@ -29,40 +29,14 @@ const Register = () => {
         setRepassword(event.target.value);
     };
 
-    const handleRegister = async () => {
-
-        if (password !== repassword) {
-            return setError('Las contraseñas no coinciden')
-        }
-
-        try {
-            await createUserWithEmailAndPassword(auth, email, password) 
-                .then(async (userCredential) => {
-                    Swal.fire({
-                        title: 'Usuario creado con exito',
-                        text: email,
-                        icon: 'success',
-                        confirmButtonText: 'Ok',
-                    });
-
-                    navigate('/login')
-                })
-                .catch((error) => {
-                    setError(error.message);
-                })
-
-        } catch (error) {
-            setError(error.message);
-
-        }
-    };
+    
     return (
         <Container sx={{ height: '100vh', display: 'flex', alignItems: 'center' }}>
             <Grid container>
                 <Grid item xs={12} sm={3} className="hidden sm:block">
                 </Grid>
                 <Grid item xs={12} sm={6} style={{ background: 'white' }}>
-                    {error && (
+                    {error != null && (
                         <Alert severity="error" onClose={() => setError(null)}>
                             {error}
                         </Alert>
@@ -107,7 +81,7 @@ const Register = () => {
                                 variant="contained"
                                 color="primary"
                                 sx={{ marginTop: 2, backgroundColor: '#DC7633' }}
-                                onClick={handleRegister}
+                                onClick={() => handleRegister(email, password, repassword)}
                             >
                                 Registrarme
                             </Button>

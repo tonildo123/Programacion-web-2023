@@ -17,6 +17,9 @@ import MenuItem from '@mui/material/MenuItem';
 import { useSelector, useDispatch } from 'react-redux';
 import { NavLink } from "react-router-dom";
 import { unlogger } from '../state/LoginSlice';
+import { profileClean } from '../state/Profileslice';
+import { addressClean } from '../state/AddressSlice';
+import { petArrayClean } from '../state/ArrayPetSlice';
 
 const settingsLogged = [{ 'label': 'Mi Perfil', 'ruta': '/profile/edit' },
                   { 'label': 'Cambiar contraseña', 'ruta': '/profile/password' }];
@@ -55,6 +58,9 @@ function ResponsiveAppBar() {
     };
     const Salir = () => {
         dispatch(unlogger())
+        dispatch(profileClean())
+        dispatch(addressClean())
+        dispatch(petArrayClean())
     };
 
     return (
