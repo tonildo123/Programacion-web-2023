@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 
 
-const useFirebase = () => {
+const useFirebaseRegister = () => {
 
     const navigate = useNavigate();
     const [error, setError] = useState(null);
@@ -39,4 +39,4 @@ const useFirebase = () => {
     return { handleRegister, error, setError };
 };
 
-export default useFirebase;
+export default useFirebaseRegister;
